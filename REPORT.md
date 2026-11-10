@@ -39,6 +39,7 @@ Each document stored in MongoDB has exactly this shape:
 currency-etl/
 ├── dags/currency_exchange_etl.py     # DAG: 3 tasks + named XComs
 ├── include/currency_utils.py         # API call, transform logic, document field order
+├── plugins/                          # (empty, required by the Astro project layout)
 ├── tests/
 │   ├── dags/test_dag_integrity.py    # DAG loads, has exactly the 3 tasks in order
 │   └── test_currency_utils.py        # transform / document-shape unit tests
@@ -46,54 +47,58 @@ currency-etl/
 ├── Dockerfile                        # Astro Runtime image
 ├── requirements.txt                  # pymongo, requests
 ├── .env                              # Mongo URI, base/quote currencies
-└── report_assets/                    # saved terminal outputs used in this report
+├── report_assets/                    # saved terminal outputs (.txt)
+│   └── screenshots/                  # figures used in this report
+├── REPORT.md                         # this report (Markdown)
+└── REPORT.docx                       # this report (Word)
 ```
 
-[SCREENSHOT 1: Project structure in VS Code (Explorer panel expanded)]
+![Figure 1: Project structure (files tracked in the GitHub repository)](report_assets/screenshots/01_project_structure.png)
+
+*Figure 1: Project structure (files tracked in the GitHub repository)*
 
 ---
 
 ## 2. Architecture
 
 ```mermaid
-flowchart LR
+flowchart TB
     API["Frankfurter API<br/>api.frankfurter.dev/v2/rates"]
 
     subgraph NET["Docker bridge network: currency-etl_0f310f_airflow"]
-        direction LR
-        subgraph AF["Airflow (Astro Runtime 3.1-25)"]
-            direction TB
+        direction TB
+        subgraph DAG["DAG currency_exchange_etl (@daily), run by the Airflow scheduler"]
+            direction LR
+            E["1. extract_exchange_rates"]
+            T["2. transform_exchange_rates"]
+            L["3. load_exchange_rates"]
+            E -- "XCom key: raw_exchange_rates" --> T
+            T -- "XCom key: transformed_exchange_rates" --> L
+        end
+        subgraph AF["Airflow services (Astro Runtime 3.1-25)"]
+            direction LR
             SCH["scheduler"]
             DP["dag-processor"]
             APIS["api-server :8080"]
             TRG["triggerer"]
-            PG[("postgres<br/>Airflow metadata + XCom")]
+            PG[("postgres<br/>metadata + XCom")]
         end
-
-        subgraph DAG["DAG: currency_exchange_etl (@daily)"]
-            direction LR
-            E["extract_exchange_rates"]
-            T["transform_exchange_rates"]
-            L["load_exchange_rates"]
-            E -- "XCom key:<br/>raw_exchange_rates" --> T
-            T -- "XCom key:<br/>transformed_exchange_rates" --> L
-        end
-
-        MDB[("MongoDB 7.0<br/>host: mongodb:27017<br/>currency_db.exchange_rates")]
-        ME["Mongo Express 1.0.2<br/>:8081"]
+        MDB[("MongoDB 7.0<br/>host mongodb:27017<br/>currency_db.exchange_rates")]
+        ME["Mongo Express 1.0.2 :8081"]
     end
 
-    VOL1[["volume: currency_mongo_data<br/>/data/db"]]
-    VOL2[["volume: currency_mongo_config<br/>/data/configdb"]]
+    VOL1[["volume currency_mongo_data<br/>/data/db"]]
+    VOL2[["volume currency_mongo_config<br/>/data/configdb"]]
 
     API -- "HTTPS GET" --> E
     L -- "ReplaceOne upsert" --> MDB
     L -. "XCom key: load_summary" .-> PG
-    SCH -. runs .-> DAG
     ME -- "mongodb://mongodb:27017" --> MDB
     MDB --- VOL1
     MDB --- VOL2
 ```
+
+*Figure 2: Architecture of the pipeline (Mermaid diagram; a rendered copy is in report_assets/screenshots/00_architecture_diagram.png)*
 
 ---
 
@@ -157,7 +162,9 @@ networks:
     driver: bridge
 ```
 
-[SCREENSHOT 2c: Code — docker-compose.override.yml open in VS Code]
+![Figure 3: Code: docker-compose.override.yml (MongoDB + Mongo Express, network and named volumes)](report_assets/screenshots/02c_code_docker_compose.png)
+
+*Figure 3: Code: docker-compose.override.yml (MongoDB + Mongo Express, network and named volumes)*
 
 ### 3.2 Networking
 
@@ -208,20 +215,24 @@ local     currency_mongo_data
 ### 3.4 Running containers
 
 ```
-$ docker ps --filter name=currency
-NAMES                                 IMAGE                                STATUS                    PORTS
-currency-etl_0f310f-dag-processor-1   currency-etl_0f310f/airflow:latest   Up                        
-currency-etl_0f310f-scheduler-1       currency-etl_0f310f/airflow:latest   Up                        
-currency-etl_0f310f-api-server-1      currency-etl_0f310f/airflow:latest   Up                        127.0.0.1:8080->8080/tcp
-currency-etl_0f310f-triggerer-1       currency-etl_0f310f/airflow:latest   Up                        
-currency_mongo_express                mongo-express:1.0.2                  Up                        0.0.0.0:8081->8081/tcp
-currency-etl_0f310f-postgres-1        postgres:15                          Up                        127.0.0.1:5432->5432/tcp
-currency_mongodb                      mongo:7.0                            Up (healthy)              0.0.0.0:27017->27017/tcp
+$ docker ps --filter name=currency --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+NAMES                                 STATUS                    PORTS
+currency-etl_0f310f-dag-processor-1   Up 33 minutes
+currency-etl_0f310f-scheduler-1       Up 33 minutes
+currency-etl_0f310f-api-server-1      Up 33 minutes             127.0.0.1:8080->8080/tcp
+currency-etl_0f310f-triggerer-1       Up 33 minutes
+currency_mongo_express                Up 32 minutes             0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+currency-etl_0f310f-postgres-1        Up 33 minutes             127.0.0.1:5432->5432/tcp
+currency_mongodb                      Up 33 minutes (healthy)   0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp
 ```
 
-[SCREENSHOT 3: Terminal — `astro dev start` output (Airflow UI URL shown) and `docker ps` with all 7 containers Up]
+![Figure 4: Terminal: `astro dev start` and `docker ps`, all 7 containers up, MongoDB healthy](report_assets/screenshots/03_terminal_astro_start_docker_ps.png)
 
-[SCREENSHOT 4: Terminal — `docker network ls` and `docker volume ls` output]
+*Figure 4: Terminal: `astro dev start` and `docker ps`, all 7 containers up, MongoDB healthy*
+
+![Figure 5: Terminal: Docker network, named volumes, and the containers attached to the shared network](report_assets/screenshots/04_terminal_network_volumes.png)
+
+*Figure 5: Terminal: Docker network, named volumes, and the containers attached to the shared network*
 
 ---
 
@@ -249,9 +260,17 @@ XCOM_TRANSFORMED = "transformed_exchange_rates"
 XCOM_LOAD_SUMMARY = "load_summary"
 ```
 
-[SCREENSHOT 2a: Code — dags/currency_exchange_etl.py open in VS Code]
+![Figure 6: Code: dags/currency_exchange_etl.py, lines 1-70 (configuration, XCom keys, DAG, extract and transform tasks)](report_assets/screenshots/02a_code_dag_part1.png)
 
-[SCREENSHOT 5: Airflow UI — DAG graph view, all 3 tasks green]
+*Figure 6: Code: dags/currency_exchange_etl.py, lines 1-70 (configuration, XCom keys, DAG, extract and transform tasks)*
+
+![Figure 7: Code: dags/currency_exchange_etl.py, lines 71-138 (transform push, load task, task order)](report_assets/screenshots/02a_code_dag_part2.png)
+
+*Figure 7: Code: dags/currency_exchange_etl.py, lines 71-138 (transform push, load task, task order)*
+
+![Figure 8: Airflow UI: DAG graph view of run manual__2026-11-10T01:34:56, all 3 tasks successful](report_assets/screenshots/05_airflow_graph_view.png)
+
+*Figure 8: Airflow UI: DAG graph view of run manual__2026-11-10T01:34:56, all 3 tasks successful*
 
 ### 4.1 Task 1 — Extract Currency Exchange Rates (`extract_exchange_rates`)
 
@@ -296,7 +315,9 @@ The API returns a flat array, one object per quote currency
 Note that the date is per row (PKR's latest published rate was a day older than the others),
 so the transform reads the date from each row rather than assuming one date for the whole response.
 
-[SCREENSHOT 6a: Airflow UI — extract_exchange_rates task log showing the raw JSON payload]
+![Figure 9: Airflow UI: extract_exchange_rates log, raw payload from the Frankfurter API](report_assets/screenshots/06a_log_extract.png)
+
+*Figure 9: Airflow UI: extract_exchange_rates log, raw payload from the Frankfurter API*
 
 ### 4.2 Task 2 — Transform Exchange Rate Data (`transform_exchange_rates`)
 
@@ -363,9 +384,17 @@ def transform_rates(raw: Any, base: str, retrieved_at: str | None = None) -> lis
 `_normalise()` accepts the v2 array format and, for robustness, the older
 `{"base": ..., "date": ..., "rates": {...}}` format.
 
-[SCREENSHOT 2b: Code — include/currency_utils.py open in VS Code]
+![Figure 10: Code: include/currency_utils.py, lines 1-60 (document field order, API call, response normaliser)](report_assets/screenshots/02b_code_currency_utils_part1.png)
 
-[SCREENSHOT 6b: Airflow UI — transform_exchange_rates task log showing the 8 transformed documents]
+*Figure 10: Code: include/currency_utils.py, lines 1-60 (document field order, API call, response normaliser)*
+
+![Figure 11: Code: include/currency_utils.py, lines 61-114 (normaliser and transform_rates)](report_assets/screenshots/02b_code_currency_utils_part2.png)
+
+*Figure 11: Code: include/currency_utils.py, lines 61-114 (normaliser and transform_rates)*
+
+![Figure 12: Airflow UI: transform_exchange_rates log, the 8 transformed documents](report_assets/screenshots/06b_log_transform.png)
+
+*Figure 12: Airflow UI: transform_exchange_rates log, the 8 transformed documents*
 
 ### 4.3 Task 3 — Load Data into MongoDB (`load_exchange_rates`)
 
@@ -436,7 +465,9 @@ Design choices:
   order with `order_document()` and writes it with `ReplaceOne`, so MongoDB stores exactly
   `base_currency, target_currency, exchange_rate, rate_date, source, retrieved_at`.
 
-[SCREENSHOT 6c: Airflow UI — load_exchange_rates task log showing the load summary]
+![Figure 13: Airflow UI: load_exchange_rates log, load summary](report_assets/screenshots/06c_log_load.png)
+
+*Figure 13: Airflow UI: load_exchange_rates log, load summary*
 
 ---
 
@@ -466,11 +497,17 @@ load_exchange_rates        load_summary                 dict
 Required named XCom keys present: True ['load_summary', 'raw_exchange_rates', 'transformed_exchange_rates']
 ```
 
-[SCREENSHOT 7a: Airflow UI — XCom tab of extract_exchange_rates showing key raw_exchange_rates]
+![Figure 14: Airflow UI: XCom tab of extract_exchange_rates, key raw_exchange_rates](report_assets/screenshots/07a_xcom_raw_exchange_rates.png)
 
-[SCREENSHOT 7b: Airflow UI — XCom tab of transform_exchange_rates showing key transformed_exchange_rates]
+*Figure 14: Airflow UI: XCom tab of extract_exchange_rates, key raw_exchange_rates*
 
-[SCREENSHOT 7c: Airflow UI — XCom tab of load_exchange_rates showing key load_summary]
+![Figure 15: Airflow UI: XCom tab of transform_exchange_rates, key transformed_exchange_rates](report_assets/screenshots/07b_xcom_transformed_exchange_rates.png)
+
+*Figure 15: Airflow UI: XCom tab of transform_exchange_rates, key transformed_exchange_rates*
+
+![Figure 16: Airflow UI: XCom tab of load_exchange_rates, key load_summary](report_assets/screenshots/07c_xcom_load_summary.png)
+
+*Figure 16: Airflow UI: XCom tab of load_exchange_rates, key load_summary*
 
 ---
 
@@ -541,7 +578,9 @@ count: 8
 
 (`retrieved_at` is in UTC.)
 
-[SCREENSHOT 8: Mongo Express — currency_db → exchange_rates collection listing the 8 documents]
+![Figure 17: Mongo Express: currency_db.exchange_rates with the 8 documents in the required shape](report_assets/screenshots/08_mongo_express_documents.png)
+
+*Figure 17: Mongo Express: currency_db.exchange_rates with the 8 documents in the required shape*
 
 ### 6.3 Tests
 
@@ -559,7 +598,9 @@ tests/test_currency_utils.py::test_invalid_rates_skipped PASSED          [100%]
 ✔ All tests passed!
 ```
 
-[SCREENSHOT 9: Terminal — `astro dev pytest` with 5 passed]
+![Figure 18: Terminal: `astro dev pytest`, 5 tests passed](report_assets/screenshots/09_terminal_astro_dev_pytest.png)
+
+*Figure 18: Terminal: `astro dev pytest`, 5 tests passed*
 
 ### 6.4 Issues found and fixed during setup
 
@@ -571,7 +612,27 @@ tests/test_currency_utils.py::test_invalid_rates_skipped PASSED          [100%]
 
 ---
 
-## 7. GitHub repository
+## 7. Conclusion
+
+The pipeline meets every requirement of the assignment:
+
+- It is an Astro CLI project (Astro Runtime 3.1-25, Airflow 3) that loads daily EUR exchange rates
+  from the Frankfurter API into MongoDB.
+- MongoDB is the primary database, and Mongo Express runs as a separate Docker service.
+- All services share one Docker bridge network and reach each other by service name, and MongoDB's
+  data lives in two named volumes that survive restarts.
+- The DAG has exactly three tasks (extract, transform, load) that pass data only through named
+  XComs: `raw_exchange_rates`, `transformed_exchange_rates` and `load_summary`.
+- Every stored document has exactly the required six fields, in the required order.
+- Loads are idempotent (unique index plus upserts), every run succeeded, and all 5 automated tests pass.
+
+Possible next steps would be alerting on task failure, keeping a history of rates in a separate
+time-series collection, and adding a data-quality check (for example, rejecting rates that move
+more than a set percentage from the previous day).
+
+---
+
+## 8. GitHub repository
 
 **https://github.com/taha-nu/currency-exchange-etl**
 
