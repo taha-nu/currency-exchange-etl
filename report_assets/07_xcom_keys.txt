@@ -1,0 +1,141 @@
+$ docker exec currency-etl_0f310f-scheduler-1 python /tmp/xcom_check.py manual__2026-11-10T01:34:56.183703+00:00   # reads Airflow's XCom table for this run
+XCom entries for dag_id=currency_exchange_etl run_id=manual__2026-11-10T01:34:56.183703+00:00
+
+task_id                    key                          value
+----------------------------------------------------------------------------------------------------
+extract_exchange_rates     raw_exchange_rates           list[8]
+transform_exchange_rates   transformed_exchange_rates   list[8]
+load_exchange_rates        load_summary                 dict
+
+=== extract_exchange_rates -> key 'raw_exchange_rates' ===
+[
+  {
+    "base": "EUR",
+    "date": "2026-11-10",
+    "rate": 1.6231,
+    "quote": "AUD"
+  },
+  {
+    "base": "EUR",
+    "date": "2026-11-10",
+    "rate": 1.5752,
+    "quote": "CAD"
+  },
+  {
+    "base": "EUR",
+    "date": "2026-11-10",
+    "rate": 0.9161,
+    "quote": "CHF"
+  },
+  {
+    "base": "EUR",
+    "date": "2026-11-10",
+    "rate": 7.4569,
+    "quote": "CNY"
+  },
+  {
+    "base": "EUR",
+    "date": "2026-11-10",
+    "rate": 0.83426,
+    "quote": "GBP"
+  },
+  {
+    "base": "EUR",
+    "date": "2026-11-10",
+    "rate": 176.97,
+    "quote": "JPY"
+  },
+  {
+    "base": "EUR",
+    "date": "2026-11-09",
+    "rate": 309.76,
+    "quote": "PKR"
+  },
+  {
+    "base": "EUR",
+    "date": "2026-11-10",
+    "rate": 1.1185,
+    "quote": "USD"
+  }
+]
+
+=== transform_exchange_rates -> key 'transformed_exchange_rates' ===
+[
+  {
+    "source": "Frankfurter API",
+    "rate_date": "2026-11-10",
+    "retrieved_at": "2026-11-10T01:34:58",
+    "base_currency": "EUR",
+    "exchange_rate": 1.6231,
+    "target_currency": "AUD"
+  },
+  {
+    "source": "Frankfurter API",
+    "rate_date": "2026-11-10",
+    "retrieved_at": "2026-11-10T01:34:58",
+    "base_currency": "EUR",
+    "exchange_rate": 1.5752,
+    "target_currency": "CAD"
+  },
+  {
+    "source": "Frankfurter API",
+    "rate_date": "2026-11-10",
+    "retrieved_at": "2026-11-10T01:34:58",
+    "base_currency": "EUR",
+    "exchange_rate": 0.9161,
+    "target_currency": "CHF"
+  },
+  {
+    "source": "Frankfurter API",
+    "rate_date": "2026-11-10",
+    "retrieved_at": "2026-11-10T01:34:58",
+    "base_currency": "EUR",
+    "exchange_rate": 7.4569,
+    "target_currency": "CNY"
+  },
+  {
+    "source": "Frankfurter API",
+    "rate_date": "2026-11-10",
+    "retrieved_at": "2026-11-10T01:34:58",
+    "base_currency": "EUR",
+    "exchange_rate": 0.83426,
+    "target_currency": "GBP"
+  },
+  {
+    "source": "Frankfurter API",
+    "rate_date": "2026-11-10",
+    "retrieved_at": "2026-11-10T01:34:58",
+    "base_currency": "EUR",
+    "exchange_rate": 176.97,
+    "target_currency": "JPY"
+  },
+  {
+    "source": "Frankfurter API",
+    "rate_date": "2026-11-09",
+    "retrieved_at": "2026-11-10T01:34:58",
+    "base_currency": "EUR",
+    "exchange_rate": 309.76,
+    "target_currency": "PKR"
+  },
+  {
+    "source": "Frankfurter API",
+    "rate_date": "2026-11-10",
+    "retrieved_at": "2026-11-10T01:34:58",
+    "base_currency": "EUR",
+    "exchange_rate": 1.1185,
+    "target_currency": "USD"
+  }
+]
+
+=== load_exchange_rates -> key 'load_summary' ===
+{
+  "matched": 8,
+  "updated": 8,
+  "database": "currency_db",
+  "inserted": 0,
+  "collection": "exchange_rates",
+  "documents_received": 8,
+  "total_in_collection": 8
+}
+
+Required named XCom keys present: True ['load_summary', 'raw_exchange_rates', 'transformed_exchange_rates']

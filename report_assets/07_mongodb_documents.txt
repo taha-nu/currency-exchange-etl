@@ -1,0 +1,96 @@
+$ docker exec currency_mongodb mongosh -u admin -p admin123 --authenticationDatabase admin --quiet --eval 'db = db.getSiblingDB("currency_db"); print("collections:", db.getCollectionNames()); print("count:", db.exchange_rates.countDocuments()); printjson(db.exchange_rates.find().sort({target_currency: 1}).toArray()); printjson(db.exchange_rates.getIndexes())'
+collections: [ 'exchange_rates' ]
+count: 8
+[
+  {
+    _id: ObjectId('6af273df32fb76d1df704736'),
+    base_currency: 'EUR',
+    target_currency: 'AUD',
+    exchange_rate: 1.6231,
+    rate_date: '2026-11-10',
+    source: 'Frankfurter API',
+    retrieved_at: '2026-11-10T01:34:58'
+  },
+  {
+    _id: ObjectId('6af273df32fb76d1df704737'),
+    base_currency: 'EUR',
+    target_currency: 'CAD',
+    exchange_rate: 1.5752,
+    rate_date: '2026-11-10',
+    source: 'Frankfurter API',
+    retrieved_at: '2026-11-10T01:34:58'
+  },
+  {
+    _id: ObjectId('6af273df32fb76d1df704738'),
+    base_currency: 'EUR',
+    target_currency: 'CHF',
+    exchange_rate: 0.9161,
+    rate_date: '2026-11-10',
+    source: 'Frankfurter API',
+    retrieved_at: '2026-11-10T01:34:58'
+  },
+  {
+    _id: ObjectId('6af273df32fb76d1df704739'),
+    base_currency: 'EUR',
+    target_currency: 'CNY',
+    exchange_rate: 7.4569,
+    rate_date: '2026-11-10',
+    source: 'Frankfurter API',
+    retrieved_at: '2026-11-10T01:34:58'
+  },
+  {
+    _id: ObjectId('6af273df32fb76d1df70473a'),
+    base_currency: 'EUR',
+    target_currency: 'GBP',
+    exchange_rate: 0.83426,
+    rate_date: '2026-11-10',
+    source: 'Frankfurter API',
+    retrieved_at: '2026-11-10T01:34:58'
+  },
+  {
+    _id: ObjectId('6af273df32fb76d1df70473b'),
+    base_currency: 'EUR',
+    target_currency: 'JPY',
+    exchange_rate: 176.97,
+    rate_date: '2026-11-10',
+    source: 'Frankfurter API',
+    retrieved_at: '2026-11-10T01:34:58'
+  },
+  {
+    _id: ObjectId('6af273df32fb76d1df70473c'),
+    base_currency: 'EUR',
+    target_currency: 'PKR',
+    exchange_rate: 309.76,
+    rate_date: '2026-11-09',
+    source: 'Frankfurter API',
+    retrieved_at: '2026-11-10T01:34:58'
+  },
+  {
+    _id: ObjectId('6af273df32fb76d1df70473d'),
+    base_currency: 'EUR',
+    target_currency: 'USD',
+    exchange_rate: 1.1185,
+    rate_date: '2026-11-10',
+    source: 'Frankfurter API',
+    retrieved_at: '2026-11-10T01:34:58'
+  }
+]
+[
+  {
+    v: 2,
+    key: {
+      _id: 1
+    },
+    name: '_id_'
+  },
+  {
+    v: 2,
+    key: {
+      base_currency: 1,
+      target_currency: 1,
+      rate_date: 1
+    },
+    name: 'uniq_pair_per_day',
+    unique: true
+  }
+]

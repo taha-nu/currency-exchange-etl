@@ -1,0 +1,99 @@
+$ docker ps --filter name=currency --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+NAMES                                 IMAGE                                STATUS                    PORTS
+currency-etl_0f310f-dag-processor-1   currency-etl_0f310f/airflow:latest   Up 35 seconds             
+currency-etl_0f310f-scheduler-1       currency-etl_0f310f/airflow:latest   Up 35 seconds             
+currency-etl_0f310f-api-server-1      currency-etl_0f310f/airflow:latest   Up 35 seconds             127.0.0.1:8080->8080/tcp
+currency-etl_0f310f-triggerer-1       currency-etl_0f310f/airflow:latest   Up 36 seconds             
+currency_mongo_express                mongo-express:1.0.2                  Up 30 seconds             0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+currency-etl_0f310f-postgres-1        postgres:15                          Up 58 seconds             127.0.0.1:5432->5432/tcp
+currency_mongodb                      mongo:7.0                            Up 58 seconds (healthy)   0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp
+
+$ docker network ls --filter name=currency
+NETWORK ID     NAME                          DRIVER    SCOPE
+28d3c270ffec   currency-etl_0f310f_airflow   bridge    local
+
+$ docker volume ls --filter name=currency
+DRIVER    VOLUME NAME
+local     currency-etl_0f310f_airflow_logs
+local     currency-etl_0f310f_postgres_data
+local     currency_mongo_config
+local     currency_mongo_data
+
+$ docker network inspect currency-etl_0f310f_airflow --format '{{range .Containers}}{{.Name}}  {{.IPv4Address}}{{println}}{{end}}'
+currency_mongodb  172.19.0.3/16
+currency-etl_0f310f-dag-processor-1  172.19.0.8/16
+currency-etl_0f310f-scheduler-1  172.19.0.7/16
+currency-etl_0f310f-triggerer-1  172.19.0.5/16
+currency-etl_0f310f-api-server-1  172.19.0.6/16
+currency_mongo_express  172.19.0.4/16
+currency-etl_0f310f-postgres-1  172.19.0.2/16
+
+
+$ docker inspect currency_mongodb --format '{{range $k, $v := .NetworkSettings.Networks}}{{$k}}  aliases={{$v.Aliases}}{{end}}'
+currency-etl_0f310f_airflow  aliases=[currency_mongodb mongodb]
+
+$ docker inspect currency_mongo_express --format '{{range $k, $v := .NetworkSettings.Networks}}{{$k}}  aliases={{$v.Aliases}}{{end}}'
+currency-etl_0f310f_airflow  aliases=[currency_mongo_express mongo-express]
+
+$ docker inspect currency-etl_0f310f-scheduler-1 --format '{{range $k, $v := .NetworkSettings.Networks}}{{$k}}  aliases={{$v.Aliases}}{{end}}'
+currency-etl_0f310f_airflow  aliases=[currency-etl_0f310f-scheduler-1 scheduler]
+
+$ docker inspect currency_mongodb --format '{{json .Mounts}}' | python -m json.tool
+[
+    {
+        "Type": "volume",
+        "Name": "currency_mongo_config",
+        "Source": "/var/lib/docker/volumes/currency_mongo_config/_data",
+        "Destination": "/data/configdb",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+    },
+    {
+        "Type": "volume",
+        "Name": "currency_mongo_data",
+        "Source": "/var/lib/docker/volumes/currency_mongo_data/_data",
+        "Destination": "/data/db",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+    }
+]
+
+$ docker volume inspect currency_mongo_data currency_mongo_config
+[
+    {
+        "CreatedAt": "2026-11-10T01:29:45Z",
+        "Driver": "local",
+        "Labels": {
+            "com.docker.compose.config-hash": "e54a90fb801f22f539a9f8ab855ee8c05d139c33f5cf4bac9c94f5c09c42a39c",
+            "com.docker.compose.project": "currency-etl_0f310f",
+            "com.docker.compose.version": "",
+            "com.docker.compose.volume": "mongo_data"
+        },
+        "Mountpoint": "/var/lib/docker/volumes/currency_mongo_data/_data",
+        "Name": "currency_mongo_data",
+        "Options": null,
+        "Scope": "local"
+    },
+    {
+        "CreatedAt": "2026-11-10T01:29:45Z",
+        "Driver": "local",
+        "Labels": {
+            "com.docker.compose.config-hash": "bfa8ef35c32b8bcc54083f5d3411a4b9bd8310bc59218d114d40bb54cabac3ae",
+            "com.docker.compose.project": "currency-etl_0f310f",
+            "com.docker.compose.version": "",
+            "com.docker.compose.volume": "mongo_config"
+        },
+        "Mountpoint": "/var/lib/docker/volumes/currency_mongo_config/_data",
+        "Name": "currency_mongo_config",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+$ docker exec currency-etl_0f310f-scheduler-1 python -c "from pymongo import MongoClient; print('ping from scheduler ->', MongoClient('mongodb://admin:admin123@mongodb:27017/?authSource=admin', serverSelectionTimeoutMS=5000).admin.command('ping'))"
+ping from scheduler -> {'ok': 1.0}
+

@@ -1,0 +1,15 @@
+# Task log: dag_id=currency_exchange_etl/run_id=manual__2026-11-10T01:34:56.183703+00:00/task_id=transform_exchange_rates/attempt=1.log
+
+[2026-11-10T01:34:58.422134Z] INFO    airflow.dag_processing.bundles.manager.DagBundlesManager - DAG bundles loaded: dags-folder
+[2026-11-10T01:34:58.423882Z] INFO    airflow.models.dagbag.BundleDagBag - Filling up the DagBag from /usr/local/airflow/dags/currency_exchange_etl.py
+[2026-11-10T01:34:58.554264Z] INFO    airflow.stats - Stats instance was created in PID 7 but accessed in PID 228. Re-initializing.
+[2026-11-10T01:34:58.579393Z] INFO    astronomer.runtime.listener - TaskInstance Details: 
+[2026-11-10T01:34:58.588060Z] INFO    currency_exchange_etl - Transformed: {'base_currency': 'EUR', 'target_currency': 'AUD', 'exchange_rate': 1.6231, 'rate_date': '2026-11-10', 'source': 'Frankfurter API', 'retrieved_at': '2026-11-10T01:34:58'}
+[2026-11-10T01:34:58.588208Z] INFO    currency_exchange_etl - Transformed: {'base_currency': 'EUR', 'target_currency': 'CAD', 'exchange_rate': 1.5752, 'rate_date': '2026-11-10', 'source': 'Frankfurter API', 'retrieved_at': '2026-11-10T01:34:58'}
+[2026-11-10T01:34:58.588297Z] INFO    currency_exchange_etl - Transformed: {'base_currency': 'EUR', 'target_currency': 'CHF', 'exchange_rate': 0.9161, 'rate_date': '2026-11-10', 'source': 'Frankfurter API', 'retrieved_at': '2026-11-10T01:34:58'}
+[2026-11-10T01:34:58.588368Z] INFO    currency_exchange_etl - Transformed: {'base_currency': 'EUR', 'target_currency': 'CNY', 'exchange_rate': 7.4569, 'rate_date': '2026-11-10', 'source': 'Frankfurter API', 'retrieved_at': '2026-11-10T01:34:58'}
+[2026-11-10T01:34:58.588440Z] INFO    currency_exchange_etl - Transformed: {'base_currency': 'EUR', 'target_currency': 'GBP', 'exchange_rate': 0.83426, 'rate_date': '2026-11-10', 'source': 'Frankfurter API', 'retrieved_at': '2026-11-10T01:34:58'}
+[2026-11-10T01:34:58.588511Z] INFO    currency_exchange_etl - Transformed: {'base_currency': 'EUR', 'target_currency': 'JPY', 'exchange_rate': 176.97, 'rate_date': '2026-11-10', 'source': 'Frankfurter API', 'retrieved_at': '2026-11-10T01:34:58'}
+[2026-11-10T01:34:58.588585Z] INFO    currency_exchange_etl - Transformed: {'base_currency': 'EUR', 'target_currency': 'PKR', 'exchange_rate': 309.76, 'rate_date': '2026-11-09', 'source': 'Frankfurter API', 'retrieved_at': '2026-11-10T01:34:58'}
+[2026-11-10T01:34:58.588654Z] INFO    currency_exchange_etl - Transformed: {'base_currency': 'EUR', 'target_currency': 'USD', 'exchange_rate': 1.1185, 'rate_date': '2026-11-10', 'source': 'Frankfurter API', 'retrieved_at': '2026-11-10T01:34:58'}
+[2026-11-10T01:34:58.598194Z] INFO    airflow.task.operators.airflow.providers.standard.decorators.python._PythonDecoratedOperator - Done. Returned value was: None

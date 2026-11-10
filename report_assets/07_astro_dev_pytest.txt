@@ -1,0 +1,21 @@
+$ astro dev pytest --args "-v -p no:cacheprovider"
+Running your test suite…
+48a5b0f09b92787c4bd5245e7f1fb11bea9b1dfe9e02462f323b6f4439217cb5
+Astro Runtime Version: 3.1-25
+============================= test session starts ==============================
+platform linux -- Python 3.12.16, pytest-9.2.0, pluggy-1.6.0 -- /usr/local/bin/python
+rootdir: /
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 5 items
+
+tests/dags/test_dag_integrity.py::test_dag_loads_with_three_tasks PASSED [ 20%]
+tests/test_currency_utils.py::test_v2_array_format PASSED                [ 40%]
+tests/test_currency_utils.py::test_dict_format_supported PASSED          [ 60%]
+tests/test_currency_utils.py::test_field_order_matches_required_shape PASSED [ 80%]
+tests/test_currency_utils.py::test_invalid_rates_skipped PASSED          [100%]
+
+============================== 5 passed in 1.77s ===============================
+
+✔ All tests passed!
+exit code: 0

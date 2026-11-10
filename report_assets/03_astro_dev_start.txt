@@ -1,0 +1,4 @@
+Warning: could not start proxy: proxy daemon is not supported on Windows
+➤ Airflow UI: http://localhost:8080
+➤ Postgres Database: postgresql://localhost:5432/postgres
+➤ The default Postgres DB credentials are: postgres:postgres

@@ -1,0 +1,8 @@
+# Task log: dag_id=currency_exchange_etl/run_id=manual__2026-11-10T01:34:56.183703+00:00/task_id=extract_exchange_rates/attempt=1.log
+
+[2026-11-10T01:34:57.364175Z] INFO    airflow.dag_processing.bundles.manager.DagBundlesManager - DAG bundles loaded: dags-folder
+[2026-11-10T01:34:57.365865Z] INFO    airflow.models.dagbag.BundleDagBag - Filling up the DagBag from /usr/local/airflow/dags/currency_exchange_etl.py
+[2026-11-10T01:34:57.480745Z] INFO    airflow.stats - Stats instance was created in PID 7 but accessed in PID 226. Re-initializing.
+[2026-11-10T01:34:57.505228Z] INFO    astronomer.runtime.listener - TaskInstance Details: 
+[2026-11-10T01:34:57.674197Z] INFO    currency_exchange_etl - Extracted raw payload from Frankfurter API: [{'date': '2026-11-10', 'base': 'EUR', 'quote': 'AUD', 'rate': 1.6231}, {'date': '2026-11-10', 'base': 'EUR', 'quote': 'CAD', 'rate': 1.5752}, {'date': '2026-11-10', 'base': 'EUR', 'quote': 'CHF', 'rate': 0.9161}, {'date': '2026-11-10', 'base': 'EUR', 'quote': 'CNY', 'rate': 7.4569}, {'date': '2026-11-10', 'base': 'EUR', 'quote': 'GBP', 'rate': 0.83426}, {'date': '2026-11-10', 'base': 'EUR', 'quote': 'JPY', 'rate': 176.97}, {'date': '2026-11-09', 'base': 'EUR', 'quote': 'PKR', 'rate': 309.76}, {'date': '2026-11-10', 'base': 'EUR', 'quote': 'USD', 'rate': 1.1185}]
+[2026-11-10T01:34:57.687332Z] INFO    airflow.task.operators.airflow.providers.standard.decorators.python._PythonDecoratedOperator - Done. Returned value was: None

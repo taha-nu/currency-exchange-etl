@@ -1,0 +1,5 @@
+astro
+.git
+.env.local
+logs/
+__pycache__/

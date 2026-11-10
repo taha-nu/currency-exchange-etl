@@ -1,0 +1,51 @@
+$ curl -s "https://api.frankfurter.dev/v2/rates?base=EUR&quotes=USD,GBP,JPY,PKR,CNY,AUD,CAD,CHF"
+[
+    {
+        "date": "2026-11-10",
+        "base": "EUR",
+        "quote": "AUD",
+        "rate": 1.6231
+    },
+    {
+        "date": "2026-11-10",
+        "base": "EUR",
+        "quote": "CAD",
+        "rate": 1.575
+    },
+    {
+        "date": "2026-11-10",
+        "base": "EUR",
+        "quote": "CHF",
+        "rate": 0.91602
+    },
+    {
+        "date": "2026-11-10",
+        "base": "EUR",
+        "quote": "CNY",
+        "rate": 7.4564
+    },
+    {
+        "date": "2026-11-10",
+        "base": "EUR",
+        "quote": "GBP",
+        "rate": 0.83424
+    },
+    {
+        "date": "2026-11-10",
+        "base": "EUR",
+        "quote": "JPY",
+        "rate": 176.96
+    },
+    {
+        "date": "2026-11-09",
+        "base": "EUR",
+        "quote": "PKR",
+        "rate": 309.74
+    },
+    {
+        "date": "2026-11-10",
+        "base": "EUR",
+        "quote": "USD",
+        "rate": 1.1184
+    }
+]

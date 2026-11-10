@@ -1,0 +1,8 @@
+$ astro dev run dags trigger currency_exchange_etl
+Running: airflow dags trigger currency_exchange_etl
+     |                       |                       |                     |                   |          | last_scheduling_decis |              |          |            |        |                     
+conf | dag_id                | dag_run_id            | data_interval_start | data_interval_end | end_date | ion                   | logical_date | run_type | start_date | state  | triggering_user_name
+=====+=======================+=======================+=====================+===================+==========+=======================+==============+==========+============+========+=====================
+{}   | currency_exchange_etl | manual__2026-11-10T01 | None                | None              | None     | None                  | None         | manual   | None       | queued | astro               
+     |                       | :34:56.183703+00:00   |                     |                   |          |                       |              |          |            |        |                     
+                                                                                                                                                                                                        

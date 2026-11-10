@@ -1,0 +1,23 @@
+$ astro dev run dags list-import-errors
+Running: airflow dags list-import-errors
+2026-11-10T01:31:01.060297Z [warning  ] Astro managed secrets backend is disabled [astronomer.runtime.plugin.AstronomerRuntimePlugin] loc=plugin.py:125
+No data found
+
+$ astro dev run dags unpause currency_exchange_etl
+Running: airflow dags unpause currency_exchange_etl
+2026-11-10T01:31:04.394225Z [warning  ] Astro managed secrets backend is disabled [astronomer.runtime.plugin.AstronomerRuntimePlugin] loc=plugin.py:125
+dag_id                | is_paused
+======================+==========
+currency_exchange_etl | True     
+                                 
+
+$ astro dev run dags trigger currency_exchange_etl
+Running: airflow dags trigger currency_exchange_etl
+2026-11-10T01:31:09.079318Z [warning  ] Astro managed secrets backend is disabled [astronomer.runtime.plugin.AstronomerRuntimePlugin] loc=plugin.py:125
+     |                       |                       |                     |                   |          | last_scheduling_decis |              |          |            |        |                     
+conf | dag_id                | dag_run_id            | data_interval_start | data_interval_end | end_date | ion                   | logical_date | run_type | start_date | state  | triggering_user_name
+=====+=======================+=======================+=====================+===================+==========+=======================+==============+==========+============+========+=====================
+{}   | currency_exchange_etl | manual__2026-11-10T01 | None                | None              | None     | None                  | None         | manual   | None       | queued | astro               
+     |                       | :31:11.280046+00:00   |                     |                   |          |                       |              |          |            |        |                     
+                                                                                                                                                                                                        
+

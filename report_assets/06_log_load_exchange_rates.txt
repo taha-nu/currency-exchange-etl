@@ -1,0 +1,8 @@
+# Task log: dag_id=currency_exchange_etl/run_id=manual__2026-11-10T01:34:56.183703+00:00/task_id=load_exchange_rates/attempt=1.log
+
+[2026-11-10T01:34:59.492066Z] INFO    airflow.dag_processing.bundles.manager.DagBundlesManager - DAG bundles loaded: dags-folder
+[2026-11-10T01:34:59.493561Z] INFO    airflow.models.dagbag.BundleDagBag - Filling up the DagBag from /usr/local/airflow/dags/currency_exchange_etl.py
+[2026-11-10T01:34:59.617221Z] INFO    airflow.stats - Stats instance was created in PID 7 but accessed in PID 229. Re-initializing.
+[2026-11-10T01:34:59.636556Z] INFO    astronomer.runtime.listener - TaskInstance Details: 
+[2026-11-10T01:34:59.669198Z] INFO    currency_exchange_etl - Load summary: {'database': 'currency_db', 'collection': 'exchange_rates', 'documents_received': 8, 'inserted': 0, 'updated': 8, 'matched': 8, 'total_in_collection': 8}
+[2026-11-10T01:34:59.681353Z] INFO    airflow.task.operators.airflow.providers.standard.decorators.python._PythonDecoratedOperator - Done. Returned value was: None
